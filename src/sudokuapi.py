@@ -36,7 +36,7 @@ class Sudoku:
     def __init__(self) -> None:
         self.grid = []
 
-    def __init__(self, grid: list) -> None:
+    def assign_grid(self, grid: list):
         self.grid = grid
 
     def load_sudoku_from_file(self, filepath: str) -> None:
@@ -47,6 +47,7 @@ class Sudoku:
                 for line in file:
                     # Lines should appear as '1, 3, 7, 0, 0, 0, ...'
                     # One line per row
+                    line = line.rstrip('\n').replace(' ', '')
                     self.grid.append([int(n) for n in line.split(',')])
             return
 
@@ -58,8 +59,91 @@ class Sudoku:
 
         self.grid = []
 
-    def is_number_in_row(self, number: int, row: int) -> bool:
-        return number in self.grid[row]
+    def get_assignable_coords(self) -> list:
 
-    def is_number_in_column(self, number: int, column: int) -> bool:
-        return number in [row[column] for row in self.grid]
+        coords = []
+
+        for row in range(9):
+            for column in range(9):
+                if self.grid[row][column] == 0:
+                    coords.append((row, column))
+
+        return coords
+
+    # use a grid coord to find a square coord
+    # for example the cell (4, 7) is in square (1, 2)
+    def get_square_coord(self, coord: tuple) -> tuple:
+        return (coord[0]//3, coord[1]//3)
+
+    # get the list of numbers in a given row in the sudoku
+    def get_numbers_in_row(self, row: int) -> list:
+        return self.grid[row]
+
+    # get the list of numbers in a given column in the sudoku
+    def get_numbers_in_column(self, column: int) -> bool:
+        return [row[column] for row in self.grid]
+
+    # get the list of numbers in a given square in the sudoku
+    def get_numbers_in_square(self, square: tuple) -> bool:
+        nums = []
+        for row in range(3):
+            for column in range(3):
+                # square coord * 3 gives cell coord
+                # the top left cell in square (2, 1) is (6, 3)
+                nums.append(self.grid[square[0]*3 + row][square[1]*3 + column])
+        return nums
+
+    # looks at all numbers in the row, column and square of a givel cell
+    # and determines what numbers haven't been used
+    def get_legal_numbers(self, coord: tuple) -> list:
+
+        # The numbers that the current cell cannot be
+        nums = []
+        r_nums = self.get_numbers_in_row(coord[0])
+        c_nums = self.get_numbers_in_column(coord[1])
+        s_nums = self.get_numbers_in_square(self.get_square_coord(coord))
+
+        for i in range(9):
+            nums.append(r_nums[i])
+            nums.append(c_nums[i])
+            nums.append(s_nums[i])
+
+        # Only check numbers greater than the current value of the cell
+        cell_value = self.grid[coord[0]][coord[1]]
+
+        legal_nums = []
+
+        # Add 1 to exclude current value and include 9
+        for n in range(cell_value, 9):
+            if n+1 not in nums:
+                legal_nums.append(n+1)
+
+        return legal_nums
+
+    # A linear search to find the cell with the least options
+    # Returns an array [coord, legal_nums]
+    def find_best_cell(self, coords: list):
+
+        best = 9
+        result = []
+
+        for coord in coords:
+            legal_nums = self.get_legal_numbers(coord)
+
+            if len(legal_nums) < best:
+                result = [coord, legal_nums]
+
+            if len(legal_nums) == 1:
+                return result
+
+        return result
+
+    def solve(self):
+
+        # Determine initally empty cells
+        coords = self.get_assignable_coords()
+
+        stack = []
+
+        # Find the first move
+        print(self.find_best_cell(coords))
