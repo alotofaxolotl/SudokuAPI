@@ -11,7 +11,7 @@ setup(
     version=version,
     description='A Python package for solving Sudoku puzzles.',
     long_description=long_description,
-    long_description_content_type='text/markdown'
+    long_description_content_type='text/markdown',
     license='GNU GPL v3',
     author='alotofaxolotl',
     author_email='alottaaxolotl@hotmail.com',
@@ -29,5 +29,5 @@ setup(
 
     ],
     package_dir={"": "src"},
-    packages=find_packages(where="src"),
+    packages=find_packages(where="src")
 )
