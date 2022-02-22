@@ -18,7 +18,7 @@ $ pip install sudokuapi
 Start by importing the `Sudoku` class into your Python file.
 
 ```python
-from sudokuapi import Sudoku
+from sudokuapi.sudokuapi import Sudoku
 ```
 
 Then, create a 2D list to represent your sudoku puzzle, and use it to construct a new instance of the `Sudoku` class.
