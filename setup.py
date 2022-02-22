@@ -4,7 +4,7 @@ with open('README.md', 'r') as file:
     long_description = file.read()
 
 name = 'sudokuapi'
-version = '0.0.1'
+version = '1.1.0'
 
 setup(
     name=name,
